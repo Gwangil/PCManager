@@ -1,340 +1,445 @@
 package work.model.dao;
 
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 import work.model.dto.Member;
 
-
-/**
- * JSP_MEMBER 테이블과 연관된 DAO로
- * 회원 데이터를 처리하는 클래스이다.
- * <br><br>
- * Data Access Object - 테이블 당 한개의 DAO를 작성한다.
- */
 public class MemberDao {
-	
+	// FactoryDao 객체 생성
 	private FactoryDao factory = FactoryDao.getInstance();
-
+	
+	// Connection 반환 메서드 구현 : getConnection() : Connection
 	public Connection getConnection() {
 		return factory.getConnection();
 	}
-
-	public Date stringToDate(Member member)
-	{
-		String year = member.getBirthyy();
-		String month = member.getBirthmm();
-		String day = member.getBirthdd();
-		
-		Date birthday  = null;
-		
-		if(year != null && month != null && day != null)
-			birthday = Date.valueOf(year+"-"+month+"-"+day);
-		
-		return birthday;
-		
-	} // end stringToDate()
 	
-	
-	/**
-	 * 회원정보를 JSP_MEMBER 테이블에 저장하는 메서드
-	 * @param member 가입할 회원정보를 담고있는 TO
-	 * @throws SQLException
-	 */
-	public void insertMember(Member member) throws SQLException
-	{
+	// 전체회원조회
+	public ArrayList<Member> selectList() {
+		ArrayList<Member> list = new ArrayList<Member>();
 		Connection conn = null;
-		PreparedStatement pstmt = null;
-		
-		try {
-			// 커넥션을 가져온다.
-			conn = getConnection();
-			
-			// 자동 커밋을 false로 한다.
-			conn.setAutoCommit(false);
-			
-			// 쿼리 생성한다.
-			// 가입일의 경우 자동으로 세팅되게 하기 위해 sysdate를 사용
-			StringBuffer sql = new StringBuffer();
-			sql.append("insert into MEMBERS values");
-			sql.append("(?, ?, ?, ?, ?, ?, ?, ?, sysdate)");		
-			stringToDate(member);
-			/* 
-			 * StringBuffer에 담긴 값을 얻으려면 toString()메서드를
-			 * 이용해야 한다.
-			 */
-			pstmt = conn.prepareStatement(sql.toString());
-			pstmt.setString(1, member.getId());
-			pstmt.setString(2, member.getPassword());
-			pstmt.setString(3, member.getName());
-			pstmt.setString(4, member.getGender());
-			pstmt.setDate(5, stringToDate(member));
-			pstmt.setString(6, member.getMail1()+"@"+member.getMail2());
-			pstmt.setString(7, member.getPhone());
-			pstmt.setString(8, member.getAddress());
-			pstmt.setInt(9,member.getMileage());
-			
-			// 쿼리 실행
-			pstmt.executeUpdate();
-			// 완료시 커밋
-			conn.commit(); 
-			
-		} catch (SQLException sqle) {
-			// 오류시 롤백
-			conn.rollback(); 
-			throw new RuntimeException(sqle.getMessage());
-		} finally {
-			// Connection, PreparedStatement를 닫는다.
-			try{
-				if ( pstmt != null ){ pstmt.close(); pstmt=null; }
-				if ( conn != null ){ conn.close(); conn=null;	}
-			}catch(Exception e){
-				throw new RuntimeException(e.getMessage());
-			}
-		}
-	} // end insertMember()
-	
-	
-	/**
-	 * 아이디를 이용해 현재 회원정보를 가져온다.
-	 * @param id 회원 아이디
-	 * @return MemberBean
-	 */
-	public Member getUserInfo(String id) {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
+		Statement stmt = null;
 		ResultSet rs = null;
-		Member member = null;
-
+		String sql = "select * from members";
+		
 		try {
-			// 쿼리
-			StringBuffer query = new StringBuffer();
-			query.append("SELECT * FROM members WHERE MEMBER_ID=?");
 			conn = getConnection();
-			System.out.println(conn);
-			pstmt = conn.prepareStatement(query.toString());
-			pstmt.setString(1, id);
-			rs = pstmt.executeQuery();
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
 			
-			if (rs.next()) // 회원정보를 DTO에 담는다.
-			{
-				// DB의 생년월일정보 -> 년, 월, 일로 문자열 자른다.
-				String birthday = rs.getDate("BIRTHDATE").toString();
-				String year = birthday.substring(0, 4);
-				String month = birthday.substring(5, 7);
-				String day = birthday.substring(8, 10);
+			String memberId = null;
+			String memberPw = null;
+			String memberName = null;
+			String mobile = null;
+			String email = null;
+			String entryDate = null;
+			char grade = '\u0000';
+			int mileage = 0;
+			String manager = null;
+			Member dto = null;
+			
+			while(rs.next()) {
+				memberId = rs.getString("memberId");
+				memberPw = rs.getString("memberPw");
+				memberName = rs.getString("memberName");
+				mobile = rs.getString("gender");
+				email = rs.getString("birthDateyy");
+				entryDate = rs.getString("birthDatemm");
+				//String grade = rs.getString("grade");
+				grade = rs.getString("grade").charAt(0);
+				mileage = rs.getInt("mileage");
+				manager = rs.getString("manager");
 				
-				// 이메일을 @ 기준으로 자른다.
-				String mail = rs.getString("EMAIL");
-				int idx = mail.indexOf("@"); 
-				String mail1 = mail.substring(0, idx);
-				String mail2 = mail.substring(idx+1);
-				
-				// 자바빈에 정보를 담는다.
-				member = new Member();
-				member.setId(rs.getString("MEMBER_ID"));
-				member.setPassword(rs.getString("MEMBER_PW"));
-				member.setName(rs.getString("MEMBER_NAME"));
-				member.setGender(rs.getString("GENDER"));
-				member.setBirthyy(year);
-				member.setBirthmm(month);
-				member.setBirthdd(day);
-				member.setMail1(mail1);
-				member.setMail2(mail2);
-				member.setPhone(rs.getString("PHONE"));
-				member.setAddress(rs.getString("ADDRESS"));
-				member.setReg(rs.getTimestamp("ENTRYDATE"));
-				member.setMileage(rs.getInt("MILEAGE"));
+				dto = new Member(memberId, memberPw, memberName, gender, birthDateyy, birthDatemm, birthDatedd, email1, email2, phone, address, entryDate, mileage);
+				list.add(dto);
 			}
-
-			return member;
-
+			
 		} catch (SQLException e) {
-			System.out.println("error : " + e.getMessage());
+			e.printStackTrace();
+			System.out.println("Error(전체회원조회오류) : " + e.getMessage());
 		} finally {
-			// Connection, PreparedStatement를 닫는다.
-			try{
-				if ( pstmt != null ){ pstmt.close(); pstmt=null; }
-				if ( conn != null ){ conn.close(); conn=null;	}
-			}catch(Exception e){
-				throw new RuntimeException(e.getMessage());
-			}
-		}return null;
-	}	// end getUserInfo
-	
-	
-	/**
-	 * 회원정보를 수정한다.
-	 * @param member 수정할 회원정보를 담고있는 TO
-	 * @throws SQLException
-	 */
-	public void updateMember(Member member) throws SQLException{
-		
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-
-		try {
-
-			StringBuffer query = new StringBuffer();
-			query.append("UPDATE MEMBERS SET");
-			query.append(" MEMBER_PW=?, EMAIL=?, PHONE=?, ADDRESS=?");
-			query.append(" WHERE MEMBER_ID=?");
-
-			conn = getConnection();
-			pstmt = conn.prepareStatement(query.toString());
-
-			// 자동 커밋을 false로 한다.
-			conn.setAutoCommit(false);
-			
-			pstmt.setString(1, member.getPassword());
-			pstmt.setString(2, member.getMail1()+"@"+member.getMail2());
-			pstmt.setString(3, member.getPhone());
-			pstmt.setString(4, member.getAddress());
-			pstmt.setString(5, member.getId());
-
-			pstmt.executeUpdate();
-			// 완료시 커밋
-			conn.commit(); 
-						
-		} catch (Exception sqle) {
-			conn.rollback(); // 오류시 롤백
-			throw new RuntimeException(sqle.getMessage());
-		} finally {
-			try{
-				if ( pstmt != null ){ pstmt.close(); pstmt=null; }
-				if ( conn != null ){ conn.close(); conn=null;	}
-			}catch(Exception e){
-				throw new RuntimeException(e.getMessage());
-			}
+			factory.close(rs, stmt, conn);
 		}
-	} // end updateMember
+		
+		return list;
+	}
 	
-	
-	/**
-	 * 회원정보를 삭제한다.
-	 * @param id 회원정보 삭제 시 필요한 아이디
-	 * @param pw 회원정보 삭제 시 필요한 비밀번호
-	 * @return x : deleteMember() 수행 후 결과값
-	 */
-	@SuppressWarnings("resource")
-	public int deleteMember(String id, String pw) 
-	{
+	// 내정보조회(아이디) : Member
+	public Member selectOne(String memberId) {
 		Connection conn = null;
-		PreparedStatement pstmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
-
-		String dbpw = ""; // DB상의 비밀번호를 담아둘 변수
-		int x = -1;
-
+		String sql = "select * from members where member_id=?";
+		
 		try {
-			// 비밀번호 조회
-			StringBuffer query1 = new StringBuffer();
-			query1.append("SELECT MEMBER_PW FROM MEMBERS WHERE MEMBER_ID=?");
-
-			// 회원 삭제
-			StringBuffer query2 = new StringBuffer();
-			query2.append("DELETE FROM MEMBERS WHERE MEMBER_ID=?");
-
 			conn = getConnection();
-
-			// 자동 커밋을 false로 한다.
-			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, memberId);
+			rs = stmt.executeQuery();
 			
-			// 1. 아이디에 해당하는 비밀번호를 조회한다.
-			pstmt = conn.prepareStatement(query1.toString());
-			pstmt.setString(1, id);
-			rs = pstmt.executeQuery();
+			String memberPw = null;
+			String memberName = null;
+			String mobile = null;
+			String email = null;
+			String entryDate = null;
+			char grade = '\u0000';
+			int mileage = 0;
+			String manager = null;
+			
+			while(rs.next()) {
+				memberId = rs.getString("member_id");
+				memberPw = rs.getString("member_pw");
+				memberName = rs.getString("member_name");
+				mobile = rs.getString("mobile");
+				email = rs.getString("email");
+				entryDate = rs.getString("entry_date");
+				grade = rs.getString("grade").charAt(0);
+				mileage = rs.getInt("mileage");
+				manager = rs.getString("manager");
+				
+				return new Member(memberId, memberPw, memberName, mobile, email, entryDate, grade, mileage, manager);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Error(전체회원조회오류) : " + e.getMessage());
+		} finally {
+			factory.close(rs, stmt, conn);
+		}
+		
+		return null;
+	}
 
-			if (rs.next()) 
-			{
-				dbpw = rs.getString("MEMBER_PW");
-				if (dbpw.equals(pw)) // 입력된 비밀번호와 DB비번 비교
-				{
-					// 같을경우 회원삭제 진행
-					pstmt = conn.prepareStatement(query2.toString());
-					pstmt.setString(1, id);
-					pstmt.executeUpdate();
-					conn.commit(); 
-					x = 1; // 삭제 성공
-				} else {
-					x = 0; // 비밀번호 비교결과 - 다름
+	// 등급별 전체회원 조회
+	public ArrayList<Member> selectList(String grade) {
+		ArrayList<Member> list = new ArrayList<Member>();
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		String sql = "select * from members where grade=?";
+		
+		try {
+			conn = getConnection();
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, grade);
+			rs = stmt.executeQuery();
+			
+			String memberId = null;
+			String memberPw = null;
+			String memberName = null;
+			String mobile = null;
+			String email = null;
+			String entryDate = null;
+			int mileage = 0;
+			String manager = null;
+			Member dto = null;
+			
+			while(rs.next()) {
+				memberId = rs.getString("member_id");
+				memberPw = rs.getString("member_pw");
+				memberName = rs.getString("member_name");
+				mobile = rs.getString("mobile");
+				email = rs.getString("email");
+				entryDate = rs.getString("entry_date");
+				mileage = rs.getInt("mileage");
+				manager = rs.getString("manager");
+				
+				dto = new Member(memberId, memberPw, memberName, mobile, email, entryDate, grade.charAt(0), mileage, manager);
+				list.add(dto);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Error(등급별 전체회원조회오류) : " + e.getMessage());
+		} finally {
+			factory.close(rs, stmt, conn);
+		}
+		
+		return list;
+	}
+
+	// 회원 등록
+	public int insert(Member dto) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		String sql = "insert into members values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		
+		try {
+			conn = getConnection();
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, dto.getMemberId());
+			stmt.setString(2, dto.getMemberPw());
+			stmt.setString(3, dto.getMemberName());
+			stmt.setString(4, dto.getGender());
+			stmt.setString(5, dto.getBirthDate());
+			stmt.setString(6, dto.getEntryDate());
+			stmt.setString(7, dto.getGrade()+"");
+			stmt.setInt(8, dto.getMileage());
+			stmt.setString(9, dto.getManager());
+			
+			return stmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Error(회원등록 오류) : " + e.getMessage());
+		} finally {
+			factory.close(rs, stmt, conn);
+		}
+		
+		return 0;
+	}
+	
+	/* 내정보 전체변경
+	-- 내정보변경
+	-- 사용자 변경가능한 속성
+	-- 암호, 이름, 연락처, 이메일
+	update members set
+	member_pw=?, member_name=?, mobile=?, email=?
+	where member_id=?
+	
+	-- 관리자 회원의정보 변경
+	-- 암호, 이름, 연락처, 이메일, 가입일, 등급, 마일리지, 담당
+	
+	*/
+	public int update(Member dto) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		//String sql = "insert into members values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		StringBuilder sql = new StringBuilder();
+		sql.append("update members set ");
+		sql.append("member_pw=?, member_name=?, mobile=?, email=? ");
+		sql.append("where member_id=?");
+		
+		try {
+			conn = getConnection();
+			stmt = conn.prepareStatement(sql.toString());
+			stmt.setString(1, dto.getMemberPw());
+			stmt.setString(2, dto.getMemberName());
+			stmt.setString(3, dto.getMobile());
+			stmt.setString(4, dto.getEmail());
+			stmt.setString(5, dto.getMemberId());
+			
+			return stmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Error(회원 내정보 변경 오류) : " + e.getMessage());
+		} finally {
+			factory.close(rs, stmt, conn);
+		}
+		
+		return 0;
+	}
+	
+	// 회원 탈퇴
+	public int delete(String memberId) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		String sql = "delete members where member_id=?";
+		
+		try {
+			conn = getConnection();
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, memberId);
+			
+			return stmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Error(회원탈퇴 오류) : " + e.getMessage());
+		} finally {
+			factory.close(rs, stmt, conn);
+		}
+		
+		return 0;
+	}
+	
+	// 로그인
+	public String loginCheck(String memberId, String memberPw) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		String sql = "select grade from members where member_id=? and member_pw=?";
+		
+		try {
+			conn = getConnection();
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, memberId);
+			stmt.setString(2, memberPw);
+			rs = stmt.executeQuery();
+			if(rs.next()) {
+				return rs.getString("grade");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Error(로그인오류) : " + e.getMessage());
+		} finally {
+			factory.close(rs, stmt, conn);
+		}
+		
+		return null;
+	}
+	
+	// 관리자 : 회원 전체정보 변경
+	public int updateAll(Member dto) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		//String sql = "insert into members values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		StringBuilder sql = new StringBuilder();
+		sql.append("update members set ");
+		sql.append("member_pw=?, member_name=?, mobile=?, email=?, ");
+		sql.append("entry_date=?, grade=?, mileage=?, manager=? ");
+		sql.append("where member_id=?");
+		
+		try {
+			conn = getConnection();
+			stmt = conn.prepareStatement(sql.toString());
+			stmt.setString(1, dto.getMemberPw());
+			stmt.setString(2, dto.getMemberName());
+			stmt.setString(3, dto.getMobile());
+			stmt.setString(4, dto.getEmail());
+			stmt.setString(5, dto.getEntryDate());
+			stmt.setString(6, new Character(dto.getGrade()).toString());
+			stmt.setInt(7, dto.getMileage());
+			stmt.setString(8, dto.getManager());
+			stmt.setString(9, dto.getMemberId());
+			
+			return stmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Error(회원 내정보 변경 오류) : " + e.getMessage());
+		} finally {
+			factory.close(rs, stmt, conn);
+		}
+		
+		return 0;
+	}
+	
+	// 아이디 찾기
+	public String selectMemberId(String memberName, String mobile) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		StringBuilder sql = new StringBuilder();
+		sql.append("select member_id from members ");
+		sql.append("where member_name=? and mobile=?");
+		
+		try {
+			conn = getConnection();
+			stmt = conn.prepareStatement(sql.toString());
+			stmt.setString(1, memberName);
+			stmt.setString(2, mobile);
+			rs = stmt.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getString("member_id");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Error(회원 아이디찾기 오류) : " + e.getMessage());
+		} finally {
+			factory.close(rs, stmt, conn);
+		}
+		
+		return null;
+	}
+	
+	/*
+	 * 암호찾기
+	 * 1. 사용자 검색
+	 * 2. 임시암호 발급
+	 * 3. 임시암호로 기존 암호 변경
+	 * 4. 임시암호 반환
+	 */
+	public String selectMemberPw(String memberId, String memberName, String mobile) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		StringBuilder sql = new StringBuilder();
+		sql.append("select member_id from members ");
+		sql.append("where member_id=? and member_name=? and mobile=?");
+		
+		try {
+			conn = getConnection();
+			stmt = conn.prepareStatement(sql.toString());
+			stmt.setString(1, memberId);
+			stmt.setString(2, memberName);
+			stmt.setString(2, mobile);
+			rs = stmt.executeQuery();
+			
+			if(rs.next()) {
+				String tmpPw = Utility.getSecureString(6);
+				System.out.println("\n## 임시발급암호 : " + tmpPw);
+				
+				sql = new StringBuilder();
+				sql.append("update members set ");
+				sql.append("member_pw=?");
+				sql.append("where member_id=?");
+				stmt = conn.prepareStatement(sql.toString());
+				stmt.setString(1, tmpPw);
+				stmt.setString(2, memberId);
+				int rows = stmt.executeUpdate();
+				if (rows == 1) {
+					return tmpPw;
 				}
 			}
-
-			return x;
-
-		} catch (Exception sqle) {
-			try {
-				conn.rollback(); // 오류시 롤백
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			throw new RuntimeException(sqle.getMessage());
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Error(회원 아이디찾기 오류) : " + e.getMessage());
 		} finally {
-			try{
-				if ( pstmt != null ){ pstmt.close(); pstmt=null; }
-				if ( conn != null ){ conn.close(); conn=null;	}
-			}catch(Exception e){
-				throw new RuntimeException(e.getMessage());
-			}
+			factory.close(rs, stmt, conn);
 		}
-	} // end deleteMember
+		
+		return null;
+	}
 	
-
-	/**
-	 * 로그인시 아이디, 비밀번호 체크 메서드
-	 * @param id 로그인할 아이디
-	 * @param pw 비밀번호
-	 * @return x : loginCheck() 수행 후 결과값 
-	 */
-	public int loginCheck(String id, String pw) 
-	{
+	// 암호변경
+	public int updatePassword(String memberId, String memberPw, String newMemberPw) {
 		Connection conn = null;
-		PreparedStatement pstmt = null;
+		PreparedStatement stmt = null;
 		ResultSet rs = null;
-
-		String dbPW = ""; // db에서 꺼낸 비밀번호를 담을 변수
-		int x = -1;
-
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("update members set ");
+		sql.append("member_pw=? ");
+		sql.append("where member_id=? and member_pw=?");
+		
 		try {
-			// 쿼리 - 먼저 입력된 아이디로 DB에서 비밀번호를 조회한다.
-			StringBuffer query = new StringBuffer();
-			query.append("SELECT MEMBER_PW FROM MEMBERS WHERE MEMBER_ID=?");
-
-			conn =  getConnection();
-			pstmt = conn.prepareStatement(query.toString());
-			pstmt.setString(1, id);
-			rs = pstmt.executeQuery();
-
-			if (rs.next()) // 입려된 아이디에 해당하는 비번 있을경우
-			{
-				dbPW = rs.getString("MEMBER_PW"); // 비번을 변수에 넣는다.
-
-				if (dbPW.equals(pw)) 
-					x = 1; // 넘겨받은 비번과 꺼내온 비번 비교. 같으면 인증성공
-				else 				 
-					x = 0; // DB의 비밀번호와 입력받은 비밀번호 다름, 인증실패
-				
-			} else {
-				x = -1; // 해당 아이디가 없을 경우
-			}
-
-			return x;
-
-		} catch (Exception sqle) {
-			throw new RuntimeException(sqle.getMessage());
+			conn = getConnection();
+			stmt = conn.prepareStatement(sql.toString());
+			stmt.setString(1, newMemberPw);
+			stmt.setString(2, memberId);
+			stmt.setString(3, memberPw);
+			
+			return stmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Error(회원 내정보 변경 오류) : " + e.getMessage());
 		} finally {
-			try{
-				if ( pstmt != null ){ pstmt.close(); pstmt=null; }
-				if ( conn != null ){ conn.close(); conn=null;	}
-			}catch(Exception e){
-				throw new RuntimeException(e.getMessage());
-			}
+			factory.close(rs, stmt, conn);
 		}
-	} // end loginCheck()	
+		
+		return 0;
+	}
+	
+	
+	// 로그인
+	// 관리자 : 회원등급변경
+	// 관리자 : 회원마일리지 변경
+	// ...
+	
 }
-

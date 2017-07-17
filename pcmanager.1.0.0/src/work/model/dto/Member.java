@@ -1,94 +1,86 @@
 package work.model.dto;
 
-import java.sql.Timestamp;
-
+/** 회원 클래스 */
 public class Member {
+
+	/** 회원 아이디 */
+	private String memberId;
 	
-	private String memberId;			// 아이디
-	private String memberPw; 	// 비밀번호
-	private String memberName;		// 이름
-	private String gender;		// 성별
-	private String birthyy;		// 생일 - 년
-	private String birthmm;		// 생일 - 월
-	private String birthdd;		// 생일 - 일
-	private String mail1;		// 이메일 - @ 앞부분
-	private String mail2;		// 이메일 - @ 뒷부분
-	private String phone;		// 전화
-	private String address;		// 주소
-	private Timestamp entryDate;		// 가입일
-	private int	mileage;
+	/** 회원 암호 */
+	private String memberPw;
 	
-	public String getId() {return memberId;}
-	public void setId(String id) {this.memberId = id;}
+	/** 회원 이름 */
+	private String memberName;
 	
-	public String getPassword() {return memberPw;}
-	public void setPassword(String password) {this.memberPw = password;}
+	/** 회원 성별 */
+	private String gender;
 	
-	public String getName() {return memberName;}
-	public void setName(String name) {this.memberName = name;}
+	/** 회원 생년월일 */
+	private String birthDateyy;		// 생일 - 년
 	
+	private String birthDatemm;		// 생일 - 월
+	
+	private String birthDatedd;		// 생일 - 일
+	
+	/** 회원 이메일*/
+	private String email1;		// 이메일 - @ 앞부분
+	
+	private String email2;		// 이메일 - @ 뒷부분
+	
+	/** 회원 휴대폰번호 */
+	private String phone;
+	
+	/** 회원 주소*/
+	private String address;	
+	
+	/** 회원 가입일 정보 */
+	private String entryDate;
+		
+	/** 회원 마일리지 정보 */
+	private int mileage;
+	
+	//get, set
+	public String getMemberId() {return memberId;}
+	public void setMemberId(String memberId) {this.memberId = memberId;}
+
+	public String getMemberPw() {return memberPw;}
+	public void setMemberPw(String memberPw) {this.memberPw = memberPw;}
+
+	public String getMemberName() {return memberName;}
+	public void setMemberName(String memberName) {this.memberName = memberName;}
+
 	public String getGender() {return gender;}
 	public void setGender(String gender) {this.gender = gender;}
-	
-	public String getBirthyy() {return birthyy;}
-	public void setBirthyy(String birthyy) {this.birthyy = birthyy;}
-	public String getBirthmm() {return birthmm;}
-	public void setBirthmm(String birthmm) {this.birthmm = birthmm;}
-	public String getBirthdd() {return birthdd;}
-	public void setBirthdd(String birthdd) {this.birthdd = birthdd;}
-	
-	public String getMail1() {return mail1;}
-	public void setMail1(String mail1) {this.mail1 = mail1;}
-	public String getMail2() {return mail2;}
-	public void setMail2(String mail2) {this.mail2 = mail2;}
-	
+
+	public String getBirthDateyy() {return birthDateyy;}
+	public void setBirthDateyy(String birthDateyy) {this.birthDateyy = birthDateyy;}
+	public String getBirthDatemm() {return birthDatemm;}
+	public void setBirthDatemm(String birthDatemm) {this.birthDatemm = birthDatemm;}
+	public String getBirthDatedd() {return birthDatedd;}
+	public void setBirthDatedd(String birthDatedd) {this.birthDatedd = birthDatedd;}
+
+	public String getEmail1() {return email1;}
+	public void setEmail1(String email1) {this.email1 = email1;}
+	public String getEmail2() {return email2;}
+	public void setEmail2(String email2) {this.email2 = email2;}
+
 	public String getPhone() {return phone;}
 	public void setPhone(String phone) {this.phone = phone;}
-	
+
 	public String getAddress() {return address;}
 	public void setAddress(String address) {this.address = address;}
+
+	public String getEntryDate() {return entryDate;}
+	public void setEntryDate(String entryDate) {this.entryDate = entryDate;}
 	
-	public Timestamp getReg() {return entryDate;}
-	public void setReg(Timestamp entryDate) {this.entryDate = entryDate;}
+	public int getMileage() {return mileage;}
+	public void setMileage(int mileage) {this.mileage = mileage;}
 	
-	public int getMileage() {
-		return mileage;
-	}
-	public void setMileage(int mileage) {
-		this.mileage = mileage;
-	}
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Member [memberId=");
-		builder.append(memberId);
-		builder.append(", memberPw=");
-		builder.append(memberPw);
-		builder.append(", memberName=");
-		builder.append(memberName);
-		builder.append(", gender=");
-		builder.append(gender);
-		builder.append(", birthyy=");
-		builder.append(birthyy);
-		builder.append(", birthmm=");
-		builder.append(birthmm);
-		builder.append(", birthdd=");
-		builder.append(birthdd);
-		builder.append(", mail1=");
-		builder.append(mail1);
-		builder.append(", mail2=");
-		builder.append(mail2);
-		builder.append(", phone=");
-		builder.append(phone);
-		builder.append(", address=");
-		builder.append(address);
-		builder.append(", entryDate=");
-		builder.append(entryDate);
-		builder.append(", mileage=");
-		builder.append(mileage);
-		builder.append("]");
-		return builder.toString();
+		return memberId + ", " + memberPw + ", " + memberName + ", " + gender + ", " + birthDateyy + ", " + birthDatemm
+				+ ", " + birthDatedd + ", " + email1 + ", " + email2 + ", " + phone + ", " + address + ", " + entryDate
+				+ ", " + mileage;
 	}
-	
-	
+
 }
