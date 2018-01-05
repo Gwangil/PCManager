@@ -10,7 +10,8 @@
 
  - Theme : PCBang Management System
  
-   -> Implementation of features from an administrator's point of view and the user's point of view
-   -> Understand the MVC model in Web application
+   > Implementation of features from an administrator's point of view and the user's point of view
+   
+   > Understand the MVC model in Web application
 
  - Using : Java, JSP, Oracle
