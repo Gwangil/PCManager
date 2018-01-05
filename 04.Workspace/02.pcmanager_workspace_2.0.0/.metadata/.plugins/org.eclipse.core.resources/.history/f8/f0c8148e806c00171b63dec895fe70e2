@@ -1,0 +1,59 @@
+package work.controller.seat;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import work.model.dao.SeatDao;
+
+/**
+ * Servlet implementation class SeatController
+ */
+public class SeatController extends HttpServlet {
+	
+	private static final long serialVersionUID = 1L;
+	
+	HttpServletRequest request;
+	HttpServletResponse response;
+	private SeatDao dao = new SeatDao();       
+
+    public SeatController() {
+        super();
+    }
+    protected void proccess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//요청파악 action =0000
+    	//요청데이터 추루
+    	//요청 데이털 검증
+    	//모델에게 요청처리 의뢰
+    	//모델에게 요청결과받아서 응답위한 결과값 설정
+    	//응답페이지로이동 
+    	String action = request.getParameter("action");
+    	//Form tag에서 엑션을 확인해야함
+    	System.out.println("action = " +action);
+
+    	switch(action){
+    		case "selectSeats":
+    		selectSeats(request,response);
+    		break;
+    	}
+	}
+
+    protected void selectSeats(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
+    }
+
+    
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	proccess(request,response);
+    }
+
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		proccess(request,response);
+	}
+
+}

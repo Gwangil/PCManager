@@ -1,0 +1,5 @@
+package work.model.dao;
+
+public class OrderSummaryDao {
+
+}

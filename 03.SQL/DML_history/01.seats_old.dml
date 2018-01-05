@@ -1,0 +1,94 @@
+
+--seats
+
+insert into seats
+values(1, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(2, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(3, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(4, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(5, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(6, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(7, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(8, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(9, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(10, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(11, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(12, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(13, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(14, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(15, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(16, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(17, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(18, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(19, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(20, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(21, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(22, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(23, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(24, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(25, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(26, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(27, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(28, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(29, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+insert into seats
+values(30, 'user01', 0, '2017/06/10','2017/06/10' , 'samsung','lg');
+
+

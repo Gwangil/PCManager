@@ -1,0 +1,88 @@
+package work.model.dao;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
+
+import work.model.dto.Member;
+import work.model.dto.Seat;
+
+public class SeatDao {
+
+	private FactoryDao factory = FactoryDao.getInstance();
+	
+	public Connection getConnection(){
+		return factory.getConnection();
+	}
+	
+	public ArrayList<Seat> selectList(){
+		ArrayList<Seat> list = null;
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		String sql = "select * from seats";
+		
+		try {
+			conn = getConnection(); 
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+		
+			int seatNo;
+			String memberId;
+		    int condition;
+			Date startTime;
+			Date finishTime;
+			String monitor;
+			String mainframe;
+			while(rs.next()){
+				seatNo = rs.getInt("seat_no");
+				memberId = rs.getString("member_id");
+			    condition = rs.getInt("condition");
+				startTime = rs.getDate("start_time");
+				finishTime = rs.getDate("finish_time");
+				monitor = rs.getString("monitor");
+				mainframe= rs.getString("mainframe");
+				
+				Seat tmp = new Seat(seatNo,memberId,condition,startTime,finishTime,monitor,mainframe);
+				list.add(tmp);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Error(전체좌석조회오류) : " + e.getMessage());
+		} finally{
+			factory.close(rs,stmt,conn);
+		}
+		return list;
+	}
+	//켜진 컴퓨터수 조회
+	public int onNumber(){
+		
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		String sql = "select count(*)  from seats where condition=1;";
+		int number=-1;
+		try {
+			conn = getConnection(); 
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			while(rs.next()){
+				number = rs.getInt(1);
+				return number;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Error(전체좌석조회오류) : " + e.getMessage());
+		} finally{
+			factory.close(rs,stmt,conn);
+		}
+		return number;
+	}
+}
+	
+

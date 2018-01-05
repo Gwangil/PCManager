@@ -1,0 +1,117 @@
+-- 레코드 추가
+-- 상품항목 추가 C
+insert into products
+values ('신라면',56,1000,2000,'라면');
+insert into products
+values ('참깨라면',80,1000,2000,'라면');
+insert into products
+values ('왕뚜껑',70,900,2000,'라면');
+insert into products
+values ('육개장',86,800,2000,'라면');
+insert into products
+values ('콜라',70,600,1000,'음료');
+insert into products
+values ('사이다',56,800,1000,'음료');
+insert into products
+values ('아이스티',98,700,1500,'음료');
+insert into products
+values ('오렌지주스',100,800,1500,'음료');
+insert into products
+values ('아메리카노',50,300,1500,'음료');
+insert into products
+values ('피자빵',40,800,1300,'빵류');
+insert into products
+values ('햄버거',75,800,1600,'빵류');
+insert into products
+values ('초코빵',66,500,900,'빵류');
+insert into products
+values ('도넛',50,600,1200,'빵류');
+insert into products
+values ('소보루빵',88,800,1300,'빵류');
+insert into products
+values ('우유식빵',77,1000,1700,'빵류');
+
+insert into members
+values ('user01','password01','최봉근','남','1992/01/01','cbg@cbg.com','010-1111-1111','상대개구멍',sysdate,0);
+insert into members
+values ('user02','password02','손평화','남','1993/01/01','sph@sph.com','010-2222-2222','일송정앞',sysdate,0);
+insert into members
+values ('user03','password03','김유미','여','1993/01/01','kym@kym.com','010-3333-3333','영도',sysdate,0);
+
+insert into orders
+values (1,'user01',sysdate);
+insert into orders
+values (2,'user03', sysdate);
+insert into orders
+values (3,'user02', sysdate);
+insert into orders
+values (4,'user01',sysdate);
+insert into orders
+values (5,'user03', sysdate);
+insert into orders
+values (6,'user02', sysdate);
+insert into orders
+values (7,'user01',sysdate);
+insert into orders
+values (8,'user03', sysdate);
+insert into orders
+values (9,'user02', sysdate);
+insert into orders
+values (10,'user02', sysdate);
+
+insert into order_lists
+values (1, '신라면', 2);
+insert into order_lists
+values (1, '콜라', 3);
+insert into order_lists
+values (2, '피자빵',2);
+insert into order_lists
+values (2, '아메리카노',1);
+insert into order_lists
+values (3, '피자빵',1);
+insert into order_lists
+values (3, '콜라',1);
+insert into order_lists
+values (3, '아메리카노',1);
+insert into order_lists
+values (4, '참깨라면',1);
+insert into order_lists
+values (4, '아이스티',1);
+insert into order_lists
+values (4, '초코빵',1);
+insert into order_lists
+values (5, '아메리카노',1);
+insert into order_lists
+values (5, '육개장',2);
+insert into order_lists
+values (5, '오렌지주스',1);
+insert into order_lists
+values (6, '아메리카노',2);
+insert into order_lists
+values (7, '우유식빵',1);
+insert into order_lists
+values (7, '콜라',2);
+insert into order_lists
+values (8, '도넛',2);
+insert into order_lists
+values (8, '아메리카노',1);
+insert into order_lists
+values (9, '사이다',1);
+insert into order_lists
+values (10, '소보루빵',1);
+insert into order_lists
+values (10, '오렌지주스',1);
+-- R
+
+
+
+
+-- U
+
+
+
+
+
+
+-- D
+

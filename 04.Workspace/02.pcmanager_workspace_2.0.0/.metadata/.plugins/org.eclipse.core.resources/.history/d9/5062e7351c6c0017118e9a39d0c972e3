@@ -1,0 +1,151 @@
+package work.model.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Date;
+
+import javax.naming.NamingException;
+
+
+/* Data Access Object
+ * ���̺� �� �Ѱ��� DAO�� �ۼ��Ѵ�.
+ * 
+ * JSP_MEMBER ���̺�� ������ DAO��
+ * ȸ�� �����͸� ó���ϴ� Ŭ�����̴�.
+ */
+public class MemberDAO 
+{
+	private static MemberDAO instance;
+	
+	// �̱��� ����
+	private MemberDAO(){}
+	public static MemberDAO getInstance(){
+		if(instance==null)
+			instance=new MemberDAO();
+		return instance;
+	}
+	
+	// String -> Date�� �����ϴ� �޼���
+	// ���ڿ��ε� ��������� Date�� �����ϱ� ���� �ʿ�
+	// java.util.DateŬ�����δ� ����Ŭ�� Date���İ� ������ �� ����.
+	// Oracle�� date���İ� �����Ǵ� java�� Date�� java.sql.Date Ŭ�����̴�.
+	public Date stringToDate(Member member)
+	{
+		String year = member.getBirthDateyy();
+		String month = member.getBirthDatemm();
+		String day = member.getBirthDatedd();
+		
+		Date birthday = Date.valueOf(year+"-"+month+"-"+day);
+		
+		return birthday;
+		
+	} // end stringToDate()
+	
+	// ȸ�������� JSP_MEMBER ���̺� �����ϴ� �޼���
+	public void insertMember(Member member) throws SQLException
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			// Ŀ�ؼ��� �����´�.
+			conn = DBConnection.getConnection();
+			
+			// �ڵ� Ŀ���� false�� �Ѵ�.
+			conn.setAutoCommit(false);
+			
+			// ���� �����Ѵ�.
+			// �������� ��� �ڵ����� ���õǰ� �ϱ� ���� sysdate�� ���
+			StringBuffer sql = new StringBuffer();
+			sql.append("insert into MEMBERS values");
+			sql.append("(?, ?, ?, ?, ?, ?, ?, ?, sysdate)");		
+			stringToDate(member);
+			/* 
+			 * StringBuffer�� ��� ���� �������� toString()�޼��带
+			 * �̿��ؾ� �Ѵ�.
+			 */
+			pstmt = conn.prepareStatement(sql.toString());
+			pstmt.setString(1, member.getMemberId());
+			pstmt.setString(2, member.getMemberPw());
+			pstmt.setString(3, member.getMemberName());
+			pstmt.setString(4, member.getGender());
+			pstmt.setDate(5, stringToDate(member));
+			pstmt.setString(6, member.getEmail1()+"@"+member.getEmail2());
+			pstmt.setString(7, member.getPhone());
+			pstmt.setString(8, member.getAddress());
+			
+			// ���� ����
+			pstmt.executeUpdate();
+			// �Ϸ�� Ŀ��
+			conn.commit(); 
+			
+		} catch (ClassNotFoundException | NamingException | SQLException sqle) {
+			// ������ �ѹ�
+			conn.rollback(); 
+			
+			throw new RuntimeException(sqle.getMessage());
+		} finally {
+			// Connection, PreparedStatement�� �ݴ´�.
+			try{
+				if ( pstmt != null ){ pstmt.close(); pstmt=null; }
+				if ( conn != null ){ conn.close(); conn=null;	}
+			}catch(Exception e){
+				throw new RuntimeException(e.getMessage());
+			}
+		} // end try~catch 
+	} // end insertMember()
+	
+	
+	// �α��ν� ���̵�, ��й�ȣ üũ �޼���
+	// ���̵�, ��й�ȣ�� ���ڷ� �޴´�.
+	public int loginCheck(String memberId, String memberPw) 
+	{
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+
+		String dbPW = ""; // db���� ���� ��й�ȣ�� ���� ����
+		int x = -1;
+
+		try {
+			// ���� - ���� �Էµ� ���̵�� DB���� ��й�ȣ�� ��ȸ�Ѵ�.
+			StringBuffer query = new StringBuffer();
+			query.append("SELECT MEMBER_PW FROM MEMBERS WHERE MEMBER_ID=?");
+
+			conn = DBConnection.getConnection();
+			pstmt = conn.prepareStatement(query.toString());
+			pstmt.setString(1, memberId);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) // �Է��� ���̵� �ش��ϴ� ��� �������
+			{
+				dbPW = rs.getString("MemberPw"); // ����� ������ �ִ´�.
+
+				if (dbPW.equals(memberPw)) 
+					x = 1; // �Ѱܹ��� ����� ������ ��� ��. ������ ��������
+				else 				 
+					x = 0; // DB�� ��й�ȣ�� �Է¹��� ��й�ȣ �ٸ�, ��������
+				
+			} else {
+				x = -1; // �ش� ���̵� ���� ���
+			}
+
+			return x;
+
+		} catch (Exception sqle) {
+			throw new RuntimeException(sqle.getMessage());
+		} finally {
+			try{
+				if ( pstmt != null ){ pstmt.close(); pstmt=null; }
+				if ( conn != null ){ conn.close(); conn=null;	}
+			}catch(Exception e){
+				throw new RuntimeException(e.getMessage());
+			}
+		}
+	} // end loginCheck()
+	
+	
+}
+

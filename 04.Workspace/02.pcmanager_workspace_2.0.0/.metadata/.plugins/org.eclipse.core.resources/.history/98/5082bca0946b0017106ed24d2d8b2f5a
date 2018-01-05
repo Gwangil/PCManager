@@ -1,0 +1,134 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+<title>좌성배정시스템</title>
+<%
+	int payAmount =0 ;
+%>
+<script type="text/javascript">
+	function payCount1(){
+		document.payForm.totalCost.value=1000;
+		document.payForm.remainCost.value=1000;
+	}
+	function payCount2(){
+		document.payForm.totalCost.value=2000;
+		document.payForm.remainCost.value=2000;
+	}
+	function payCount3(){
+		document.payForm.totalCost.value=3000;
+		document.payForm.remainCost.value=3000;
+	}
+	function payCount5(){
+		document.payForm.totalCost.value=5000;
+		document.payForm.remainCost.value=5000;
+	}
+	function payCount8(){
+		document.payForm.totalCost.value=8000;
+		document.payForm.remainCost.value=8000;
+	}
+	function payCount10(){
+		document.payForm.totalCost.value=10000;
+		document.payForm.remainCost.value=10000;
+	}
+	
+	
+
+</script>
+<link type="text/css" rel="stylesheet" href="css/common.css">
+<link type="text/css" rel="stylesheet" href="css/common.css">
+</head>
+<body>
+<h2 align="center">좌석배정시스템</h2><p>
+<table width="1200px" border="1">
+	<tr width="1200px">
+		<td width="600px" align="center">사용가능좌석</td>
+		<td width="600px" align="center">빈좌석</td>
+	</tr>
+</table>
+<hr>
+<form id="payForm" name="payForm" action="" method="post">
+	<table width="1200px"  border="1" height="750px">
+		<tr width= "1200px">
+			<td align ="center" valign="middle" width="300">
+						<table width="300" height="650" >
+							<tr>
+								<td colspan="2" height="50"></td>
+							</tr>
+							<tr>
+								<td width="150px" height="150px" bordercolor="write"> 
+									<IMG SRC="seat/cal01.jpg" align="center"  width="150px" height="150px" onclick ="payCount1()">
+								</td>
+								<td width="150px" height="150px" bordercolor="write"> 
+									<IMG SRC="seat/cal02.jpg" align="center"  width="150px" height="150px" onclick="payCount2()">
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" height="50"></td>
+							</tr>
+							<tr>
+								<td width="150px" height="150px" bordercolor="write"> 
+									<IMG SRC="seat/cal03.jpg" align="center"  width="150px" height="150px"onclick="payCount3()">
+								</td>
+								<td width="150px" height="150px" bordercolor="write"> 
+									<IMG SRC="seat/cal04.jpg" align="center"  width="150px" height="150px" onclick="payCount5()">
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" height="50"></td>
+							</tr>
+							<tr>
+								<td width="150px" height="150px" bordercolor="write"> 
+									<IMG SRC="seat/cal05.jpg" align="center"  width="150px",height="150px" onclick="payCount8()">
+								</td>
+								<td width="150px" height="150px" bordercolor="write"> 
+									<IMG SRC="seat/cal06.jpg" align="center"  width="150px",height="150px" onclick="payCount10()">
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" height="50"></td>
+							</tr>
+									
+						</table>
+			</td>
+			<td align ="center" valign="middle" width="300px">
+				<table height="680px" width="300px">
+					<tr  height="50px">
+						<td>
+							<h2  align="center" >결제화면</h2>
+						</td>
+					</tr>
+					<tr>
+						<td><h3>
+							아이디 : <input type="text" id="memberId" name="memberId" value="아이디를입력하세요"><br><br><br><br><br>
+							투입금액 : <input type="text" id="insertCost" name="insertCost" readonly>  원<br><br>
+							남은금액 : <input type="text" id="remainCost" name="remainCost" readonly> 원<br><br>
+							총금액   :  <input type="text" id="totalCost" name="totalCost" readonly> 원<br><br>
+									<input type="button" value = "1000원투입" align="left" onclick="">
+						</h3><td>
+					</tr>
+					<tr>
+						<td>
+							 <input type="submit" value="결제" >
+						<td>
+					</tr>
+				</table>
+			</td>
+			
+			<!-- 좌석 -->
+			<td align ="center" valign="middle" width="600px">
+			<div><IMG SRC="seat/cal06.jpg" align="center"  width="50px",height="50px"></div>
+			
+			</td> 
+		</tr>
+		
+		<tr width= "1200px" height="100px">
+			<td colspan="3" valign = "top" width="600px" align="center">5</td>
+		</tr>
+	</table>
+</form>
+
+</body>
+</html>

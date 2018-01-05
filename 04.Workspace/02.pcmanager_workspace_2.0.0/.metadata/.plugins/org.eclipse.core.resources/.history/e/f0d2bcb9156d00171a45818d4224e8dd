@@ -1,0 +1,51 @@
+package work.model.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import work.model.dto.OrderList;
+import work.model.dto.OrderSummary;
+
+public class OrderSummaryDao {
+	private FactoryDao factory = FactoryDao.getInstance();
+	public Connection getConnection(){
+		return factory.getConnection();
+	}
+	
+	/** 주문 번호 별 구매목록 상세 조회 */
+	public ArrayList<OrderSummary> selectListDetail(String orderNo) {
+		ArrayList<OrderSummary> list = new ArrayList<OrderSummary>();
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		String sql = "select * from order_lists where order_no = ?";
+		try{
+			conn = getConnection();
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, orderNo);
+			rs = stmt.executeQuery();
+			
+			String productName = null;
+			int productCount = 0;
+			OrderList dto = null;
+			
+			while(rs.next()) {
+				productName = rs.getString("product_Name");
+				productCount = rs.getInt("productCount");
+				
+				dto = new OrderList(productName, productCount);
+				list.add(dto);
+			}
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+			System.out.println("Error(주문번호별 주문내역 오류) : " + e.getMessage());
+		} finally {
+			factory.close(rs, stmt, conn);
+		}
+		return list;
+	}
+}

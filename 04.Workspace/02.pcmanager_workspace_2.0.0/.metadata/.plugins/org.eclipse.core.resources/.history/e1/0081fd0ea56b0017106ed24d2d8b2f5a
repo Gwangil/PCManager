@@ -1,0 +1,71 @@
+package work.model.dao;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+import work.model.dto.Member;
+import work.model.dto.Seat;
+
+public class SeatDao {
+
+	private FactoryDao factory = FactoryDao.getInstance();
+	
+	public Connection getConnection(){
+		return factory.getConnection();
+	}
+	public ArrayList<Seat> selectList(){
+		ArrayList<Seat> list = new ArrayList<Seat>();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		String sql = "select * from seats";
+		
+		try {
+			conn = getConnection(); 
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			//System.out.println(rs);
+			String memberId;
+			String memberPw;
+			String memberName;
+			String mobile;
+			String email;
+			String entryDate;
+			char grade;
+			int mileage;
+			String manager;
+			
+			while(rs.next()){
+				
+				memberId = rs.getString("member_id");
+				memberPw = rs.getString("member_pw");
+				memberName = rs.getString("member_name");
+				mobile = rs.getString("mobile");
+				email = rs.getString("email");
+				entryDate = rs.getString("entry_date");
+				grade = rs.getString("grade").charAt(0);
+				mileage =rs.getInt("mileage");
+				manager = rs.getString("manager");
+				
+				Member tmp = new Member(memberId,memberPw,memberName,mobile,email,entryDate,grade,mileage,manager);
+				//System.out.println(tmp);
+				list.add(tmp);
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Error(전체회원조회오류) : " + e.getMessage());
+		} finally{
+			factory.close(rs,stmt,conn);
+		}
+		return list;
+	
+		
+		
+		return null;
+	}
+	
+}

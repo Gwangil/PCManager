@@ -1,0 +1,543 @@
+package work.controller;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import work.model.dao.MemberDao;
+import work.model.dto.Member;
+import work.util.Utility;
+
+/**
+ * Servlet implementation class HelloServlet
+ */
+
+/**
+ * ȸ�������ý����� ��� ��û�� �����ϴ� Controller Ŭ����
+ * @author �Ӱ���
+ */
+public class FrontController extends HttpServlet {
+	/** Singleton Pattern : MemberDao ��ü */
+	private MemberDao dao = MemberDao.getInstance();
+		
+	/**
+	 * ȸ�������ý����� ��� ��û�� dispatcher ó���ϴ� ���� �޼���
+	 * -- 1. ��û�ľ� : action=0000
+	 * -- 2. ��û ������ ����
+	 * -- 3. ��û ������ ����
+	 * -- 4. �𵨿��� ��ûó�� �Ƿ�
+	 * -- 5. �𵨿��� ��û����޾Ƽ� �������� ����� ����
+	 * -- 6. ���������� �̵� 
+	 * 			=> ����
+	 * 			=> ����
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String action = request.getParameter("action");
+		
+		switch(action) {
+			case "login":
+				login(request, response);
+				break;
+			case "joinSave":
+				joinSave(request, response);
+				break;
+			case "logout":
+				logout(request, response);
+				break;
+			case "myInfo":
+				myInfo(request, response);
+				break;
+			case "changePassword":
+				changePassword(request, response);
+				break;
+			case "myInfoUpdate":
+				myInfoUpdate(request, response);
+				break;
+			case "myInfoUpdateSave":
+				myInfoUpdateSave(request, response);
+				break;
+			case "getMemberAll":
+				getMemberAll(request, response);
+				break;
+			case "deleteMember":
+				deleteMember(request, response);
+				break;
+			case "updateMember":
+				updateMember(request, response);
+				break;
+			case "updateMemberSave":
+				updateMemberSave(request, response);
+				break;
+			case "findMemberId":
+				findMemberId(request, response);
+				break;
+			case "findMemberPw":
+				findMemberPw(request, response);
+				break;
+			default:
+				construction(request, response);
+				break;
+		}	
+		
+	}
+
+	/**
+	 * ������ �� �غ����� ���񽺿� ���� ��û
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void construction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.sendRedirect("member/construction.jsp");
+	}
+	
+	/**
+	 * ���� üũ : ������ ���� ����
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 * @return ������(A)�̸� true ��ȯ
+	 */
+	protected boolean authorizationCheck(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (authenticationCheck(request, response)) {
+			if (request.getSession(false).getAttribute("grade").equals("A")) {
+				return true;
+			}
+		} 
+		return false;
+	}
+	
+	/**
+	 * �α��� üũ : ȸ�� ���� ����
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 * @return �α��� ȸ���̸� true ��ȯ
+	 */
+	protected boolean authenticationCheck(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(false);
+		if (session != null && 
+				session.getAttribute("memberId") != null) {
+			return true;
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * ��й�ȣ ã�� : ���̵�, �̸�, �����
+	 * @see javax.servlet.ServletRequest#getParameterMap()
+	 * @see java.util.Map<java.lang.String,java.lang.String[]>
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void findMemberPw(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Map<String, String[]> map = request.getParameterMap();
+		if (map != null) {
+			String memberId = map.get("memberId")[0];
+			String memberName = map.get("memberName")[0];
+			String mobile = map.get("mobile")[0];
+			
+			if (memberId != null && memberName != null &&
+				mobile != null) {
+				String tmpPw = dao.selectMemberPw(memberId, memberName, mobile);
+				if (tmpPw != null) {
+					StringBuilder info = new StringBuilder();
+					info.append(memberId);
+					info.append("���� �ӽù߱޾�ȣ�� ");
+					info.append(tmpPw);
+					info.append(" �Դϴ�.");
+					info.append("�α��� �� ��ȣ�� �����Ͻñ� �ٶ��ϴ�.");
+					request.setAttribute("message", info);
+					request.getRequestDispatcher("/login.jsp").forward(request, response);
+					return;
+				}
+			}
+		}
+		
+		request.setAttribute("message", "������ �ٽ� Ȯ���Ͻñ� �ٶ��ϴ�.");
+		request.getRequestDispatcher("/error.jsp").forward(request, response);
+	}
+	
+	/**
+	 * ���̵� ã�� : �̸�, ����ó
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void findMemberId(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String memberName = request.getParameter("memberName");
+		String mobile = request.getParameter("mobile");
+		
+		if (memberName != null && mobile != null) {
+			String memberId = dao.selectMemberId(memberName, mobile);
+			if (memberId != null) {
+				StringBuilder info = new StringBuilder();
+				info.append(memberName);
+				info.append("���� ���̵�� ");
+				info.append(memberId);
+				info.append(" �Դϴ�.");
+				request.setAttribute("message", info);
+				request.getRequestDispatcher("/login.jsp").forward(request, response);
+				return;
+			}
+		}
+		
+		request.setAttribute("message", "������ �ٽ� Ȯ���Ͻñ� �ٶ��ϴ�.");
+		request.getRequestDispatcher("/error.jsp").forward(request, response);
+	}
+	
+	/**
+	 * ������ :  ȸ�� ������ ���� ���� ��û
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void updateMemberSave(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (authenticationCheck(request, response)) {
+			if (authorizationCheck(request, response)) {
+				String memberId = request.getParameter("memberId");
+				String memberPw = request.getParameter("memberPw");
+				String memberName = request.getParameter("memberName");
+				String gender = request.getParameter("gender");
+				String birthDate = request.getParameter("birthDate");
+				String email = request.getParameter("email");
+				String mobile = request.getParameter("mobile");
+				String address = request.getParameter("adress");
+				String entryDate = request.getParameter("entryDate");
+				String grade = request.getParameter("grade");
+				int mileage = Integer.parseInt(request.getParameter("mileage"));
+				
+				Member dto = new Member(memberId, memberPw, memberName, gender, birthDate, email, mobile, address, entryDate, grade, mileage);
+				dao.updateAll(dto);	// ������ ȸ������ ���� �Ϸ�
+				getMemberAll(request, response); // ����: ��üȸ����ȸ
+			} else {
+				request.setAttribute("message", "�ش� ���񽺿� ���� ������ �����մϴ�.");
+				request.getRequestDispatcher("/result.jsp").forward(request, response);
+			}
+		} else {
+			request.setAttribute("message", "ȸ������ ���� �Դϴ�. �α��� �� ����Ͻñ� �ٶ��ϴ�.");
+			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}
+	}
+	
+	/**
+	 * ������ : ȸ�� ���� ���� (�⺻�������� + ������, ���, ���ϸ���, �����)
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void updateMember(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (authenticationCheck(request, response)) {
+			if (authorizationCheck(request, response)) {
+				String memberId = request.getParameter("memberId");
+				if (memberId != null && memberId.trim().length() > 0) {
+					Member dto = dao.selectOne(memberId);  
+					request.setAttribute("dto", dto);
+					request.getRequestDispatcher("/updateMember.jsp").forward(request, response);
+				} 	
+			} else {
+				request.setAttribute("message", "�ش� ���񽺿� ���� ������ �����մϴ�.");
+				request.getRequestDispatcher("/result.jsp").forward(request, response);
+			}
+		} else {
+			request.setAttribute("message", "ȸ������ ���� �Դϴ�. �α��� �� ����Ͻñ� �ٶ��ϴ�.");
+			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}
+	}
+	
+	/**
+	 * ȸ��Ż�� : 
+	 * �����ڴ� ������ ȸ�� Ż��
+	 * �Ϲ�/��� ȸ���� �α��� ȸ�� Ż�� 
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void deleteMember(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (authenticationCheck(request, response)) {
+			if (authorizationCheck(request, response)) {
+				String memberId = request.getParameter("memberId");
+				if (memberId != null && memberId.trim().length() > 0) {
+					dao.delete(memberId);  
+					getMemberAll(request, response); 
+				} 	
+			} else {
+				String memberId = request.getSession(false).getAttribute("memberId").toString(); 
+				dao.delete(memberId);
+				logout(request, response);
+				//request.setAttribute("message", "ȸ���� Ż��ó���� �Ϸ�Ǿ����ϴ�.<br>�׵��� �̿����ּż� �����մϴ�.");
+				//request.getRequestDispatcher("/index.jsp").forward(request, response);
+			}
+		} else {
+			request.setAttribute("message", "ȸ������ ���� �Դϴ�. �α��� �� ����Ͻñ� �ٶ��ϴ�.");
+			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}
+
+	}
+	
+	/**
+	 * ������ : ��üȸ����ȸ
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void getMemberAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (authenticationCheck(request, response)) {
+			if (authorizationCheck(request, response)) {
+				ArrayList<Member> list = dao.selectList();
+				request.setAttribute("list", list);
+				request.getRequestDispatcher("/memberList.jsp").forward(request, response);
+			} else {
+				request.setAttribute("message", "�ش� ���񽺿� ���� ������ �����մϴ�.");
+				request.getRequestDispatcher("/result.jsp").forward(request, response);
+			}
+			
+		} else {
+			request.setAttribute("message", "ȸ������ ���� �Դϴ�. �α��� �� ����Ͻñ� �ٶ��ϴ�.");
+			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}
+	}
+	
+	/**
+	 * �α��� ȸ�� ������ ���� ���� ��û
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void myInfoUpdateSave(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (authenticationCheck(request, response)) {
+			String memberId = request.getSession(false).getAttribute("memberId").toString();
+			String memberPw = request.getParameter("memberPw");
+			String memberName = request.getParameter("memberName");
+			String email = request.getParameter("email");
+			String mobile = request.getParameter("mobile");
+			
+			Member dto = new Member(memberId, memberPw, memberName, email, mobile);
+			dao.update(dto);
+			request.setAttribute("message", "������ ������ �Ϸ�Ǿ����ϴ�.");
+			request.getRequestDispatcher("/result.jsp").forward(request, response);
+		} else {
+			request.setAttribute("message", "ȸ������ ���� �Դϴ�. �α��� �� ����Ͻñ� �ٶ��ϴ�.");
+			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}
+	}
+	
+	/**
+	 * �α��� ȸ�� ������ �������� ������ ��ȸ ��û
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void myInfoUpdate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (authenticationCheck(request, response)) {
+			String memberId = request.getSession(false).getAttribute("memberId").toString();
+			Member dto = dao.selectOne(memberId);
+			if (dto != null) {
+				//String memberPw = dto.getMemberPw();
+				//dto.setMemberPw(Utility.convertSecureString(memberPw,3));
+				request.setAttribute("dto", dto);
+				request.getRequestDispatcher("/myInfoUpdate.jsp").forward(request, response);
+			} else {
+				response.sendRedirect("result.jsp");
+			}
+		} else {
+			request.setAttribute("message", "ȸ������ ���� �Դϴ�. �α��� �� ����Ͻñ� �ٶ��ϴ�.");
+			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}
+	}	
+	
+	/**
+	 * �α��� ȸ�� ��ȣ ���� ��û
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void changePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (authenticationCheck(request, response)) {
+			String memberId = request.getSession(false).getAttribute("memberId").toString();
+			String memberPw = request.getParameter("memberPw");
+			String newMemberPw = request.getParameter("newMemberPw");
+
+			if (memberPw != null 
+					&& newMemberPw != null
+					&& memberPw.trim().length() > 0
+					&& newMemberPw.trim().length() > 0) {
+				int rows = dao.updatePassword(memberId, memberPw, newMemberPw);
+				if (rows == 1) {
+					request.setAttribute("message", "��ȣ ������ �Ϸ�Ǿ����ϴ�.");
+					request.getRequestDispatcher("/result.jsp").forward(request, response);
+				}
+			} else {
+				request.setAttribute("message", "��ȣ ������ ���������� �̷���� �ʾҽ��ϴ�. �ٽ� Ȯ���Ͻñ� �ٶ��ϴ�.");
+				request.getRequestDispatcher("/result.jsp").forward(request, response);
+			}
+		} else {
+			request.setAttribute("message", "�α���/ȸ�������� �̿��Ͻñ� �ٶ��ϴ�.");
+			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}
+		
+	}
+	
+	/* �α׾ƿ� :
+	 * �α��� �����(���ǰ�ü����, ���̵� ��� ����)�� �α׾ƿ�
+	 *	1. ���ǰ�ü �������� : �������ǰ������� getSession(false)
+	 *	2. ���ǰ�ü ���� ���̵� �����ͼ� �����ϸ� ���Ǽ������� ����:removeAttribute(key)
+	 *	3. ���ǰ�ü ���� ��� �����ͼ� �����ϸ� ���Ǽ������� ����
+	 *	4. ���ǰ�ü ���� : invalidate()
+	 *	5. �α׾ƿ� ���������� �̵� : ����������, �α׾ƿ���������������
+	 *	6. �α׾ƿ�����(����)
+	 *		-- �α��������ʰ� �α׾ƿ���û : ����������
+	 */
+	protected void logout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (authenticationCheck(request, response)) {
+			HttpSession session = request.getSession(false);
+			session.removeAttribute("memberId");
+			session.removeAttribute("grade");
+			session.invalidate();
+			response.sendRedirect("index.jsp");
+		} else { 
+			request.setAttribute("message", "�α��� �� ����Ͻñ� �ٶ��ϴ�.");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/error.jsp");
+			dispatcher.forward(request, response);		
+		}
+	}	
+	
+	/*
+	 * ��������ȸ
+	 * -- �α��� ������� ��������ȸ : ���ǿ� �����Ǿ� �ִ� ���̵�(�α��λ����)�� ����
+	 * -- 1. ��ûȭ��
+	 * 		=> ȸ������ ���� ���������� : result.jsp
+	 * -- 2. contrller
+	 * -- 3. model : service => dao (sql) : Member
+	 * -- 4. controller ���� ���� ����
+	 * -- 5. ���������� �̵� : Member#getXxx()
+	 * 		=> myInfo.jsp
+	 */
+	protected void myInfo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (authenticationCheck(request, response)) {
+			String memberId = request.getSession(false).getAttribute("memberId").toString();
+			Member dto = dao.selectOne(memberId);
+			if (dto != null) {
+				String memberPw = dto.getMemberPw();
+				dto.setMemberPw(Utility.convertSecureString(memberPw,3));
+				request.setAttribute("dto", dto);
+				request.getRequestDispatcher("product/myInfo.jsp").forward(request, response);
+			} else {
+				response.sendRedirect("result.jsp");
+			}
+		} else {
+			request.setAttribute("message", "ȸ������ ���� �Դϴ�. �α��� �� ����Ͻñ� �ٶ��ϴ�.");
+			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}
+	}	
+		
+	/**
+	 * ȸ������ �����û 
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void joinSave(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String memberId = request.getParameter("memberId");
+		String memberPw = request.getParameter("memberPw");
+		String memberName = request.getParameter("memberName");
+		String gender = request.getParameter("gender");
+		String birthDate = request.getParameter("birthDate");
+		String email = request.getParameter("email");
+		String mobile = request.getParameter("mobile");
+		String address = request.getParameter("address");
+		
+		// service Ŭ�������� �߰� ���� ���� ����
+		String entryDate = Utility.getCurrentDay();
+		String grade = "G";
+		int mileage = 0;
+		
+		Member dto = new Member(memberId, memberPw, memberName, gender, birthDate, email, mobile, address, entryDate, grade, mileage);
+		int rows = dao.insert(dto);
+		if (rows == 1) {
+			request.setAttribute("message", memberName + "�� ȸ�������� �Ϸ�Ǿ����ϴ�.<br>�α��� �� �̿��Ͻñ� �ٶ��ϴ�.");
+			request.getRequestDispatcher("/login.jsp").forward(request, response);
+		} else {
+			request.setAttribute("message", memberName + "�� ȸ�������� ���������� �̷�� ���� �ʾҽ��ϴ�.<br>�ٽ� Ȯ�� �Ͻñ� �ٶ��ϴ�.");
+			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}
+	}
+
+	/**
+	 * �α��� ��û 
+	 * -- 2. ��û ������ ���� : �α��ο�ûȭ������(login.jsp)
+	 * -- 3. ��û ������ ����
+	 * -- 4. �𵨿��� ��ûó�� �Ƿ�
+	 * -- 5. �𵨿��� ��û����޾Ƽ� �������� ����� ����
+	 * -- 6. ���������� �̵� 
+	 * 			=> ����
+	 * 			=> ����
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String memberId = request.getParameter("memberId");
+		String memberPw = request.getParameter("memberPw");
+		
+		if (memberId.length() > 0 && memberPw.length() > 0) {
+			String grade = dao.loginCheck(memberId, memberPw);
+			if (grade != null) {
+				HttpSession session = request.getSession(true); 
+				session.setAttribute("grade", grade);
+				session.setAttribute("memberId", memberId);
+				request.getRequestDispatcher("/result.jsp").forward(request, response);
+			} else {
+				request.setAttribute("message", "�α��� ������ �ùٸ��� �ʽ��ϴ�. �ٽ� Ȯ���Ͻñ� �ٶ��ϴ�.");
+				request.getRequestDispatcher("/error.jsp").forward(request, response);
+			}	
+		} else {
+			request.setAttribute("message", "�α��� ������ �Է��Ͻñ� �ٶ��ϴ�.");
+			request.getRequestDispatcher("/error.jsp").forward(request, response);
+		}	
+	}
+	
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		process(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		process(request, response);
+	}
+	
+}

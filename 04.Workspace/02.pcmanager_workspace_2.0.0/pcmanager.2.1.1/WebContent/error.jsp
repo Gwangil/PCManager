@@ -1,0 +1,60 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!-- jstl cofing -->
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+    
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+<title>에러페이지</title>
+
+<!-- external css : css/common.css -->
+<link type="text/css" rel="stylesheet" href="css/common.css">
+
+<!-- internal js -->
+
+</head>
+<body>
+
+<!-- header area -->
+<!-- logo link -->
+<a href="index.jsp">
+<img src="img/logo.gif" title="홈페이지 이동">
+</a>
+<hr>
+
+<!-- 로그인 전 메뉴 -->
+<div class="menu_area" style="text-align:right;">
+<a class="normal" href="member/login.jsp">로그인</a>
+<a class="normal" href="member/join.jsp">회원가입</a>
+<a class="normal" href="member/memberIdAndPw.jsp">아이디/비밀번호 찾기</a>
+</div>
+<hr>
+
+
+<!-- content area -->
+<h3>Construction</h3>
+<div class="txt_error">
+Message : <p>${requestScope.message}
+</div>
+
+<div class="img">
+	<img src="img/img_error.jpg" title="오류 이미지">
+</div>
+
+<!-- footer area -->
+<hr>
+<div class="footer_area" style="text-align:center;">
+COPYRIGHT 2017 WORK. ALL RIGHTS RESERVED
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+

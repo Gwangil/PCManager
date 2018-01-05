@@ -1,0 +1,149 @@
+package work.model.dto;
+
+import java.util.Date;
+
+/** 회원 클래스 */
+public class Member {
+	
+	/** 회원아이디 */
+	private String memberId;
+	
+	/** 비밀번호 */
+	private String memberPw;
+	
+	/** 회원 이름 */
+	private String memberName;
+	
+	/** 성별 */
+	private String gender;
+	
+	/** 생년월일 */
+	private Date birthDate;
+	
+	/** 이메일 */
+	private String email;
+	
+	/** 연락처 */
+	private String phone;
+	
+	/** 주소 */
+	private String address;
+	
+	/** 가입일 */
+	private Date entryDate;
+	
+	/** 마일리지 */
+	private int mileage;
+
+	/** 기본생성자 */
+	public Member() {}
+
+	/** 필수 데이터 생성자 */
+	public Member(String memberId, String memberPw, String memberName) {
+		this.memberId = memberId;
+		this.memberPw = memberPw;
+		this.memberName = memberName;
+	}
+
+	/** 전체 데이터 생성자 */
+	public Member(String memberId, String memberPw, String memberName, String gender, Date birthDate, String email,
+			String phone, String address, Date entryDate, int mileage) {
+		this.memberId = memberId;
+		this.memberPw = memberPw;
+		this.memberName = memberName;
+		this.gender = gender;
+		this.birthDate = birthDate;
+		this.email = email;
+		this.phone = phone;
+		this.address = address;
+		this.entryDate = entryDate;
+		this.mileage = mileage;
+	}
+
+	public String getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
+	}
+
+	public String getMemberPw() {
+		return memberPw;
+	}
+
+	public void setMemberPw(String memberPw) {
+		this.memberPw = memberPw;
+	}
+
+	public String getMemberName() {
+		return memberName;
+	}
+
+	public void setMemberName(String memberName) {
+		this.memberName = memberName;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public Date getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public Date getEntryDate() {
+		return entryDate;
+	}
+
+	public void setEntryDate(Date entryDate) {
+		this.entryDate = entryDate;
+	}
+
+	public int getMileage() {
+		return mileage;
+	}
+
+	public void setMileage(int mileage) {
+		this.mileage = mileage;
+	}
+
+	@Override
+	public String toString() {
+		return memberId + ", " + memberPw + ", " + memberName + ", " + gender + ", " + birthDate + ", " + email + ", "
+				+ phone + ", " + address + ", " + entryDate + ", " + mileage;
+	}
+	
+}

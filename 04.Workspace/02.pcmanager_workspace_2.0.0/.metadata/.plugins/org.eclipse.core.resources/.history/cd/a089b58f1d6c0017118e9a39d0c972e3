@@ -1,0 +1,88 @@
+package work.model.dto;
+
+import java.sql.Timestamp;
+
+/** 회원 클래스 */
+public class Member 
+{
+	/** ȸ�� ���̵� */
+	private String memberId;
+	
+	/** ȸ�� ��ȣ */
+	private String memberPw;
+	
+	/** ȸ�� �̸� */
+	private String memberName;
+	
+	/** ȸ�� ���� */
+	private String gender;
+	
+	/** ȸ�� ������� */
+	private String birthDateyy;		// ���� - ��
+	
+	private String birthDatemm;		// ���� - ��
+	
+	private String birthDatedd;		// ���� - ��
+	
+	/** ȸ�� �̸���*/
+	private String email1;		// �̸��� - @ �պκ�
+	
+	private String email2;		// �̸��� - @ �޺κ�
+	
+	/** ȸ�� �޴�����ȣ */
+	private String phone;
+	
+	/** ȸ�� �ּ�*/
+	private String address;	
+	
+	/** ȸ�� ������ ���� */
+	private Timestamp entryDate;
+		
+	/** ȸ�� ���ϸ��� ���� */
+	private int mileage;
+	
+	//get, set
+	public String getMemberId() {return memberId;}
+	public void setMemberId(String memberId) {this.memberId = memberId;}
+
+	public String getMemberPw() {return memberPw;}
+	public void setMemberPw(String memberPw) {this.memberPw = memberPw;}
+
+	public String getMemberName() {return memberName;}
+	public void setMemberName(String memberName) {this.memberName = memberName;}
+
+	public String getGender() {return gender;}
+	public void setGender(String gender) {this.gender = gender;}
+
+	public String getBirthDateyy() {return birthDateyy;}
+	public void setBirthDateyy(String birthDateyy) {this.birthDateyy = birthDateyy;}
+	public String getBirthDatemm() {return birthDatemm;}
+	public void setBirthDatemm(String birthDatemm) {this.birthDatemm = birthDatemm;}
+	public String getBirthDatedd() {return birthDatedd;}
+	public void setBirthDatedd(String birthDatedd) {this.birthDatedd = birthDatedd;}
+
+	public String getEmail1() {return email1;}
+	public void setEmail1(String email1) {this.email1 = email1;}
+	public String getEmail2() {return email2;}
+	public void setEmail2(String email2) {this.email2 = email2;}
+
+	public String getPhone() {return phone;}
+	public void setPhone(String phone) {this.phone = phone;}
+
+	public String getAddress() {return address;}
+	public void setAddress(String address) {this.address = address;}
+
+	public Timestamp getEntryDate() {return entryDate;}
+	public void setEntryDate(Timestamp entryDate) {this.entryDate = entryDate;}
+	
+	public int getMileage() {return mileage;}
+	public void setMileage(int mileage) {this.mileage = mileage;}
+	
+	@Override
+	public String toString() {
+		return memberId + ", " + memberPw + ", " + memberName + ", " + gender + ", " + birthDateyy + ", " + birthDatemm
+				+ ", " + birthDatedd + ", " + email1 + ", " + email2 + ", " + phone + ", " + address + ", " + entryDate
+				+ ", " + mileage;
+	}
+	
+}

@@ -1,0 +1,28 @@
+package work.model.dao;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+import work.model.dto.Member;
+import work.model.dto.Seat;
+
+public class SeatDao {
+
+	private FactoryDao factory = FactoryDao.getInstance();
+	
+	public Connection getConnection(){
+		return factory.getConnection();
+	}
+	public ArrayList<Seat> selectList(){
+		ArrayList<Seat> list = new ArrayList<Seat>();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		
+		
+		return null;
+	}
+	
+}

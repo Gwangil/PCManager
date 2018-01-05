@@ -1,0 +1,102 @@
+package work.model.service;
+
+import java.util.ArrayList;
+
+import work.model.dao.MemberDao;
+import work.model.dto.Member;
+
+/**
+ * 회원관리를 위한 기능(crud)이 모델링된 서비스 클래스
+ */
+public class MemberService {
+	// Member ���̺� DAO �ϱ����� ��ü ����
+	//private MemberDao dao = new MemberDao();
+	
+	// Singleton Pattern ���� ���� ��� ����
+	private MemberDao dao = MemberDao.getInstance();
+	
+	/** ��� ȸ���� ��ȸ �޼��� */
+	public int getCount() {
+		return 0;
+	}
+	
+	/**
+	 * ȸ�� ���̵� ���� ���� �� ������ġ ��ȸ �޼���
+	 * @param memberId ��ȸ ȸ�� ���̵�
+	 * @return ����� true, ������� false ��ȯ
+	 */
+	public boolean isExist(String memberId) {
+		return false;
+	}
+	
+	/**
+	 * ȸ�� ���
+	 * @param dto ��� ȸ����ü
+	 * @return ������� ��� ��ȯ
+	 */
+	public int addMember(Member dto) {
+		return dao.insert(dto);
+	}
+	
+	
+	/**
+	 * ȸ�� ���� ��ȸ
+	 * @param memberId ��ȸ ȸ�� ���̵�
+	 * @return ��ȸȸ�� ��ü, ������� null ��ȯ
+	 */
+	public Member getMember(String memberId) {
+		return dao.selectOne(memberId);
+	}
+	
+	/**
+	 * ����������
+	 * @param dto ���� ȸ����ü ����
+	 * @return �������� ��� ��ȯ
+	 */
+	public int updateMember(Member dto) {
+		return dao.update(dto);
+	}
+	
+	/**
+	 * ��ȣ ����
+	 * @param memberId ȸ�� ���̵�
+	 * @param memberPw ȸ�� ��ȣ
+	 * @param modifyMemberPw ȸ�� ���� ��ȣ
+	 */
+	public void updateMemberPw(String memberId, String memberPw, String modifyMemberPw) {
+	}
+	
+	/**
+	 * ȸ�� Ż��
+	 * @param memberId Ż�� ȸ�� ���̵�
+	 * @return Ż������ ��� ��ȯ
+	 */
+	public int deleteMember(String memberId) {
+		return dao.delete(memberId);
+	}
+	
+	/**
+	 * ��üȸ�� ��ȸ
+	 * @return ��üȸ�� ��ü����
+	 */
+	public ArrayList<Member> getMember() {
+		return dao.selectList();
+	}
+	
+	public ArrayList<Member> getMemberGrade(String grade) {
+		return dao.selectList(grade);
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
