@@ -8,6 +8,8 @@
  - Team : 평화로운PC방
    > Member : 손평화(팀장), 서광일, 최봉근, 김유미
 
+ - Working period : 2017-07-07 ~ 2017-07-21
+
  - Theme : PCBang Management System
  
    > Implementation of features from an administrator's point of view and the user's point of view
